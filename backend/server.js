@@ -132,6 +132,14 @@ connectDB();
 
 // Routes
 app.get('/', (_, res) => res.json({ status: 'ok', service: 'leetcode-leaderboard-backend' }));
+app.get('/health', (_, res) => {
+  res.status(200).json({
+    status: 'ok',
+    service: 'leetcode-leaderboard-backend',
+    uptimeSeconds: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
 app.use('/api/students', studentRoutes);
 
 // Start
