@@ -7,7 +7,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <NavLink
-            to="/"
+            to="https://campus-to-corporate.vercel.app"
             className="flex items-center gap-3 transition-opacity hover:opacity-80"
           >
             <img src="/logo.png" alt="GLA Leaderboard Logo" className="h-10 w-10" />
