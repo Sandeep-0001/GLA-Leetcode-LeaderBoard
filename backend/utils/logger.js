@@ -1,37 +1,16 @@
-// Structured logging utility
+// Structured logging utility - Simple format
 const logger = {
   error: (message, error = null, context = {}) => {
-    const log = {
-      level: 'ERROR',
-      timestamp: new Date().toISOString(),
-      message,
-      ...context,
-    };
-    // Only log error message, not full stack trace (security)
-    if (error) {
-      log.errorType = error.constructor?.name || 'Unknown';
-    }
-    console.error(JSON.stringify(log));
+    const msg = error ? `${message} (${error.constructor?.name})` : message;
+    console.error(`[ERROR] ${msg}`);
   },
 
   warn: (message, context = {}) => {
-    const log = {
-      level: 'WARN',
-      timestamp: new Date().toISOString(),
-      message,
-      ...context,
-    };
-    console.warn(JSON.stringify(log));
+    console.warn(`[WARN] ${message}`);
   },
 
   info: (message, context = {}) => {
-    const log = {
-      level: 'INFO',
-      timestamp: new Date().toISOString(),
-      message,
-      ...context,
-    };
-    console.log(JSON.stringify(log));
+    console.log(`[INFO] ${message}`);
   },
 };
 

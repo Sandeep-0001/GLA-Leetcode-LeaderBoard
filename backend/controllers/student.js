@@ -8,8 +8,16 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_MIME_TYPES = [
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   'application/vnd.ms-excel',
+  'text/csv',
+  'application/csv',
   'application/octet-stream'
 ];
+
+// Helper to validate file by extension as fallback
+function isValidFileExt(fileName) {
+  const name = fileName.toLowerCase();
+  return name.endsWith('.xlsx') || name.endsWith('.xls') || name.endsWith('.csv');
+}
 
 // POST /api/students/upload
 exports.uploadStudents = async (req, res) => {
@@ -26,9 +34,12 @@ exports.uploadStudents = async (req, res) => {
       return res.status(400).json({ message: 'File too large. Maximum size is 5MB.' });
     }
 
-    // Validate file type
-    if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-      return res.status(400).json({ message: 'Invalid file type. Only Excel files are allowed.' });
+    // Validate file type (by MIME type or extension)
+    const isMimeTypeValid = ALLOWED_MIME_TYPES.includes(file.mimetype);
+    const isExtValid = isValidFileExt(file.name);
+    
+    if (!isMimeTypeValid && !isExtValid) {
+      return res.status(400).json({ message: 'Invalid file type. Only Excel (.xlsx, .xls) or CSV files are allowed.' });
     }
 
     const job = await createUploadJob({

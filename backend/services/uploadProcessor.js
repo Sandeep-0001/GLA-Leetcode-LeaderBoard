@@ -151,10 +151,28 @@ async function bulkWriteStudents(docs) {
 // Main upload processor
 async function processUpload(fileBuffer, year, onProgress) {
   try {
-    // Parse file
-    const workbook = xlsx.read(fileBuffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
-    const rows = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    // Parse file (xlsx handles both Excel and CSV)
+    let rows = [];
+    try {
+      const workbook = xlsx.read(fileBuffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames[0];
+      rows = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    } catch (err) {
+      // If xlsx fails, try parsing as CSV directly
+      const text = fileBuffer.toString('utf-8');
+      const lines = text.trim().split('\n');
+      if (lines.length < 2) throw new Error('File is empty or invalid');
+      
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
+      rows = lines.slice(1).map(line => {
+        const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+        const obj = {};
+        headers.forEach((h, i) => {
+          obj[h] = values[i] || '';
+        });
+        return obj;
+      }).filter(row => Object.values(row).some(v => v)); // Filter empty rows
+    }
 
     if (!Array.isArray(rows) || rows.length === 0) {
       throw new Error('File is empty or invalid');
