@@ -15,7 +15,7 @@ const updatePageMeta = (title, description) => {
 export default function LeaderboardPage() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [yearFilter, setYearFilter] = useState(''); // '' | 2 | 3 | 4
+  const [yearFilter, setYearFilter] = useState('2'); // '' | 2 | 3 | 4
   const [sectionFilter, setSectionFilter] = useState(''); // A | B | C | ... or empty
   const [sectionOptions, setSectionOptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
