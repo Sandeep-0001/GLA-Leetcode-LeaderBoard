@@ -15,7 +15,7 @@ const updatePageMeta = (title, description) => {
 export default function LeaderboardPage() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [yearFilter, setYearFilter] = useState('2'); // 2 | 3 | 4
+  const [yearFilter, setYearFilter] = useState(''); // '' | 2 | 3 | 4
   const [sectionFilter, setSectionFilter] = useState(''); // A | B | C | ... or empty
   const [sectionOptions, setSectionOptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,10 +27,14 @@ export default function LeaderboardPage() {
 
   // Update meta tags when filters change
   useEffect(() => {
-    const yearLabel = { '2': '2nd Year', '3': '3rd Year', '4': '4th Year' }[yearFilter] || 'Students';
+    const yearLabel = { '2': '2nd Year', '3': '3rd Year', '4': '4th Year' }[yearFilter] || '';
     const sectionLabel = sectionFilter ? ` - Section ${sectionFilter}` : '';
-    const title = `GLA ${yearLabel} LeetCode Leaderboard${sectionLabel} | GLA Rankings`;
-    const description = `GLA LeetCode Leaderboard: View ${yearLabel}${sectionLabel} competitive programming rankings. Track student LeetCode progress and coding performance - CareerPrep powered.`;
+    const title = yearLabel
+      ? `GLA ${yearLabel} LeetCode Leaderboard${sectionLabel} | GLA Rankings`
+      : `GLA LeetCode Leaderboard${sectionLabel} | GLA Rankings`;
+    const description = yearLabel
+      ? `GLA LeetCode Leaderboard: View ${yearLabel}${sectionLabel} competitive programming rankings. Track student LeetCode progress and coding performance - CareerPrep powered.`
+      : `GLA LeetCode Leaderboard: View all students${sectionLabel} competitive programming rankings. Track student LeetCode progress and coding performance - CareerPrep powered.`;
     updatePageMeta(title, description);
   }, [yearFilter, sectionFilter]);
 
@@ -149,6 +153,7 @@ export default function LeaderboardPage() {
                   onChange={(e) => setYearFilter(e.target.value)}
                   className="bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
                 >
+                  <option value="">All Years</option>
                   <option value="2">2nd Year</option>
                   <option value="3">3rd Year</option>
                   <option value="4">4th Year</option>
@@ -192,6 +197,7 @@ export default function LeaderboardPage() {
               onChange={(e) => setYearFilter(e.target.value)}
               className="bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 w-full"
             >
+              <option value="">All Years</option>
               <option value="2">2nd Year</option>
               <option value="3">3rd Year</option>
               <option value="4">4th Year</option>
