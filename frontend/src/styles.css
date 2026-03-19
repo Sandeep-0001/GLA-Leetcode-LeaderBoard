@@ -4,3 +4,8 @@
   html, body { height: 100%; }
   body { @apply bg-slate-900 text-slate-100; }
 }
+
+.leaderboard-scroll {
+  scrollbar-gutter: stable both-edges;
+  overscroll-behavior: contain;
+}

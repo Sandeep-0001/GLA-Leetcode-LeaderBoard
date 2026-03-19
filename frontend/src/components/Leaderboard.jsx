@@ -5,9 +5,10 @@ export default function Leaderboard({ data, onRefreshStudent }) {
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(600);
 
-  // Virtualization (keeps "All" fast): render only visible rows.
-  const enableVirtual = Array.isArray(data) && data.length > 300;
-  const rowHeight = 44;
+  // Virtualization (keeps very large datasets fast): render only visible rows.
+  // Keep 500 rows non-virtual to avoid perceived row-size jitter while scrolling.
+  const enableVirtual = Array.isArray(data) && data.length > 1000;
+  const rowHeight = 48;
   const overscan = 15;
 
   useEffect(() => {
@@ -78,7 +79,7 @@ export default function Leaderboard({ data, onRefreshStudent }) {
         if (!enableVirtual) return;
         setScrollTop(e.currentTarget.scrollTop);
       }}
-      className={`rounded-lg border border-slate-700 bg-slate-800 ${enableVirtual ? 'max-h-[70vh] overflow-auto' : 'overflow-x-auto'}`}
+      className={`leaderboard-scroll rounded-lg border border-slate-700 bg-slate-800 ${enableVirtual ? 'max-h-[70vh] overflow-y-auto overflow-x-auto' : 'overflow-x-auto'}`}
     >
       <table className="min-w-full text-sm" role="table" aria-label="LeetCode leaderboard with student rankings and solved problems">
         <thead className="bg-slate-900/80 sticky top-0 z-10 backdrop-blur supports-backdrop-filter:bg-slate-900/60">
@@ -102,7 +103,11 @@ export default function Leaderboard({ data, onRefreshStudent }) {
           ) : null}
 
           {visibleRows.map((s, i) => (
-            <tr key={s._id || s.rollNumber || i} className="odd:bg-white/5 hover:bg-cyan-600/10 transition-colors">
+            <tr
+              key={s._id || s.rollNumber || i}
+              className="odd:bg-white/5 hover:bg-cyan-600/10 transition-colors"
+              style={enableVirtual ? { height: rowHeight } : undefined}
+            >
               <td className="px-4 py-3 text-left">{rankBadge(Number(s.rank) || (i + 1))}</td>
               <td className="px-4 py-3 text-left tabular-nums font-mono">{s.universityId ? String(s.universityId) : (s.rollNumber || s.roll || s.rollNo || '-')}</td>
               <td className="px-4 py-3">
