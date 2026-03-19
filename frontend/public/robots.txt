@@ -1,0 +1,47 @@
+# Robots.txt for GLA LeetCode Leaderboard
+# Generated: 2026-03-19
+
+User-agent: *
+Allow: /
+
+# Prioritize important pages
+Allow: /$
+Allow: /sitemap.xml
+
+# Disallow admin or private areas (if any)
+Disallow: /admin/
+Disallow: /private/
+Disallow: /.well-known/
+Disallow: /node_modules/
+
+# Sitemap location
+Sitemap: https://leaderboard.careerprep.tech/sitemap.xml
+
+# Crawl delay (optional - be nice to servers)
+Crawl-delay: 1
+
+# Specific instructions for major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Social media crawlers
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
