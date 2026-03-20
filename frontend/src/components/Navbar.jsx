@@ -18,13 +18,13 @@ export default function Navbar() {
   return (
     <nav className="border-b border-slate-800 bg-slate-900/90 backdrop-blur supports-backdrop-filter:bg-slate-900/70">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-2 sm:gap-8">
           <NavLink
             to="https://campus-to-corporate.vercel.app"
             className="flex items-center gap-3 transition-opacity hover:opacity-80"
           >
             <img src="/logo.png" alt="GLA Leaderboard Logo" className="h-10 w-10" />
-            <span className="text-lg font-semibold tracking-wide text-slate-50 hidden sm:inline">CareerPrep AI</span>
+            <span className="text-sm sm:text-lg font-semibold tracking-wide text-slate-50 whitespace-nowrap">CareerPrep AI</span>
           </NavLink>
           <div className="hidden md:flex items-center gap-4 text-xs md:text-sm">
             {navItems.map((item) => (
