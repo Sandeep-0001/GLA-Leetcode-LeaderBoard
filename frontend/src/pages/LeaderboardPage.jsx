@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { getLeaderboard, getSections, refreshAll as refreshAllApi, refreshStudentStats } from '../services/api';
 import FileUpload from '../components/FileUpload.jsx';
 import Leaderboard from '../components/Leaderboard.jsx';
@@ -14,11 +13,10 @@ const updatePageMeta = (title, description) => {
 };
 
 export default function LeaderboardPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialYear = (searchParams.get('year') || '2').trim();
-  const initialSection = (searchParams.get('section') || '').trim();
-  const initialQuery = (searchParams.get('q') || '').trim();
-  const initialLimit = Number(searchParams.get('limit') || 50);
+  const initialYear = '2';
+  const initialSection = '';
+  const initialQuery = '';
+  const initialLimit = 50;
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -59,15 +57,6 @@ export default function LeaderboardPage() {
       setLoading(false);
     }
   }, [limit, page, searchQuery, sectionFilter, yearFilter]);
-
-  useEffect(() => {
-    const params = {};
-    if (yearFilter) params.year = yearFilter;
-    if (sectionFilter) params.section = sectionFilter;
-    if (searchQuery.trim()) params.q = searchQuery.trim();
-    if (Number(limit) !== 50) params.limit = String(limit);
-    setSearchParams(params, { replace: true });
-  }, [yearFilter, sectionFilter, searchQuery, limit, setSearchParams]);
 
   useEffect(() => {
     setPage(1);
