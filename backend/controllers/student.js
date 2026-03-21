@@ -164,6 +164,7 @@ exports.getLeaderboard = async (req, res) => {
       const students = await Student.find(filter)
         .sort({ totalSolved: -1, hardSolved: -1, contestRating: -1 })
         .select({
+          _id: 1,
           name: 1,
           leetcodeUsername: 1,
           universityId: 1,
@@ -188,6 +189,7 @@ exports.getLeaderboard = async (req, res) => {
     if (cached) return res.json(cached);
 
     const projection = {
+      _id: 1,
       name: 1,
       leetcodeUsername: 1,
       universityId: 1,
