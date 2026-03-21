@@ -1,6 +1,28 @@
 const axios = require('axios');
 const logger = require('../utils/logger');
 
+function normalizeLeetCodeUsername(value) {
+  if (!value) return '';
+  const raw = String(value).trim();
+  try {
+    const url = new URL(raw);
+    const parts = url.pathname.split('/').filter(Boolean);
+    if (parts.length >= 2 && parts[0].toLowerCase() === 'u') {
+      return parts[1].trim();
+    }
+    if (parts.length >= 1) {
+      return parts[0].trim();
+    }
+    return '';
+  } catch (_) {
+    return raw
+      .replace(/^https?:\/\/([^/]*\.)?leetcode\.com\//i, '')
+      .replace(/^u\//i, '')
+      .replace(/\/.*/g, '')
+      .trim();
+  }
+}
+
 const graphql = async (query, variables) => {
   const res = await axios.post('https://leetcode.com/graphql', { query, variables }, {
     headers: {
@@ -43,9 +65,12 @@ const fetchContestRating = async (username) => {
 
 const fetchLeetCodeStats = async (username) => {
   try {
+    const normalized = normalizeLeetCodeUsername(username);
+    if (!normalized) return null;
+
     const [solved, rating] = await Promise.all([
-      fetchSolvedCounts(username),
-      fetchContestRating(username)
+      fetchSolvedCounts(normalized),
+      fetchContestRating(normalized)
     ]);
     return {
       easySolved: solved.easy || 0,

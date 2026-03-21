@@ -37,13 +37,7 @@ export const getLeaderboard = async (opts = {}) => {
   if (section) params.section = section;
   if (q) params.q = q;
   
-  const { data } = await API.get('/leaderboard', {
-    params,
-    headers: {
-      'Cache-Control': 'no-cache',
-      Pragma: 'no-cache',
-    },
-  });
+  const { data } = await API.get('/leaderboard', { params });
   return data;
 };
 

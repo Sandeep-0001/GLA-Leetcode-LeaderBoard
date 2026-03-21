@@ -69,7 +69,7 @@ async function fetchStatsWithRetry(username, maxRetries = 2) {
 }
 
 // Process students in parallel batches
-async function processBatch(docs, batchSize = Number(process.env.LEETCODE_FETCH_BATCH_SIZE || 20)) {
+async function processBatch(docs, existingByUsername, batchSize = Number(process.env.LEETCODE_FETCH_BATCH_SIZE || 20)) {
   const results = [];
   
   for (let i = 0; i < docs.length; i += batchSize) {
@@ -88,14 +88,21 @@ async function processBatch(docs, batchSize = Number(process.env.LEETCODE_FETCH_
           doc.mediumSolved = stats.mediumSolved || 0;
           doc.hardSolved = stats.hardSolved || 0;
           doc.contestRating = stats.contestRating || 0;
+          doc.lastUpdated = new Date();
+          results.push({ doc, success: true });
         } else {
-          doc.easySolved = doc.easySolved ?? 0;
-          doc.mediumSolved = doc.mediumSolved ?? 0;
-          doc.hardSolved = doc.hardSolved ?? 0;
-          doc.contestRating = doc.contestRating ?? 0;
+          const existing = existingByUsername.get(doc.leetcodeUsername);
+          if (existing) {
+            doc.easySolved = Number(existing.easySolved) || 0;
+            doc.mediumSolved = Number(existing.mediumSolved) || 0;
+            doc.hardSolved = Number(existing.hardSolved) || 0;
+            doc.contestRating = Number(existing.contestRating) || 0;
+            doc.lastUpdated = existing.lastUpdated || new Date();
+            results.push({ doc, success: true });
+          } else {
+            results.push({ doc, success: false, error: 'Stats fetch failed for new student' });
+          }
         }
-        doc.lastUpdated = new Date();
-        results.push({ doc, success: true });
       } else {
         results.push({ doc: result.reason, success: false, error: result.reason.message });
       }
@@ -193,6 +200,7 @@ async function processUpload(fileBuffer, year, onProgress) {
 
     // Extract student data
     const docs = [];
+    let invalidRows = 0;
     for (const row of normalizedRows) {
       const name = getVal(row, ['name', 'fullname', 'studentname']);
       const rawUser = getVal(row, [
@@ -205,10 +213,18 @@ async function processUpload(fileBuffer, year, onProgress) {
         'profile',
         'profileurl'
       ]);
-      if (!name || !rawUser) continue;
+      if (!name || !rawUser) {
+        invalidRows += 1;
+        continue;
+      }
+      const normalizedUsername = normalizeUsername(rawUser);
+      if (!normalizedUsername) {
+        invalidRows += 1;
+        continue;
+      }
       docs.push({
         name: String(name).trim(),
-        leetcodeUsername: normalizeUsername(rawUser),
+        leetcodeUsername: normalizedUsername,
         universityId: getVal(row, ['universityid', 'roll', 'rollno', 'rollnumber']) || '',
         batch: displayBatch || (getVal(row, ['batch', 'year']) || ''),
         section: getVal(row, ['section', 'div', 'division']) || '',
@@ -219,6 +235,20 @@ async function processUpload(fileBuffer, year, onProgress) {
     if (docs.length === 0) {
       throw new Error('No valid rows found. Ensure your first sheet has headers: name, leetcodeUsername');
     }
+
+    const usernames = [...new Set(docs.map((d) => d.leetcodeUsername))];
+    const existingStudents = await Student.find({ leetcodeUsername: { $in: usernames } })
+      .select({
+        _id: 0,
+        leetcodeUsername: 1,
+        easySolved: 1,
+        mediumSolved: 1,
+        hardSolved: 1,
+        contestRating: 1,
+        lastUpdated: 1,
+      })
+      .lean();
+    const existingByUsername = new Map(existingStudents.map((s) => [s.leetcodeUsername, s]));
 
     // Report initial progress
     onProgress({
@@ -233,9 +263,9 @@ async function processUpload(fileBuffer, year, onProgress) {
     });
 
     // Process in parallel batches
-    const batchedResults = await processBatch(docs);
+    const batchedResults = await processBatch(docs, existingByUsername);
     const successfulDocs = batchedResults.filter(r => r.success).map(r => r.doc);
-    const failedCount = batchedResults.length - successfulDocs.length;
+    const failedCount = (batchedResults.length - successfulDocs.length) + invalidRows;
 
     // Report progress before writing
     onProgress({

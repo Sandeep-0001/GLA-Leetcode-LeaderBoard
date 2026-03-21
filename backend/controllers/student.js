@@ -4,6 +4,39 @@ const { createUploadJob, getUploadJobStatus } = require('../services/queue');
 const { fetchLeetCodeStats } = require('../services/leetcode');
 const logger = require('../utils/logger');
 
+function getYearFilter(year) {
+  if (!year) return {};
+
+  if (year === '2') {
+    return {
+      $or: [
+        { yearLevel: '2' },
+        { batch: { $regex: /(\b2\b|2nd|second)/i } },
+      ],
+    };
+  }
+
+  if (year === '3') {
+    return {
+      $or: [
+        { yearLevel: '3' },
+        { batch: { $regex: /(\b3\b|3rd|third)/i } },
+      ],
+    };
+  }
+
+  if (year === '4') {
+    return {
+      $or: [
+        { yearLevel: '4' },
+        { batch: { $regex: /(\b4\b|4th|fourth)/i } },
+      ],
+    };
+  }
+
+  return { yearLevel: year };
+}
+
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_MIME_TYPES = [
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -117,7 +150,7 @@ exports.getSections = async (req, res) => {
   try {
     const year = (req.query?.year || '').toString().trim();
     const filter = { section: { $exists: true, $ne: '' } };
-    if (year) filter.yearLevel = year;
+    if (year) Object.assign(filter, getYearFilter(year));
 
     const sections = await Student.distinct('section', filter);
     const normalized = sections
@@ -140,14 +173,16 @@ exports.getLeaderboard = async (req, res) => {
     const section = (req.query?.section || '').toString().trim();
     const q = (req.query?.q || '').toString().trim();
     const hasPagination = req.query?.page != null || req.query?.limit != null;
-    const page = Math.max(1, Number(req.query?.page || 1));
-    const limit = Math.min(10_000, Math.max(1, Number(req.query?.limit || 50)));
+    const parsedPage = Number.parseInt(req.query?.page, 10);
+    const parsedLimit = Number.parseInt(req.query?.limit, 10);
+    const page = Number.isFinite(parsedPage) ? Math.max(1, parsedPage) : 1;
+    const limit = Number.isFinite(parsedLimit) ? Math.min(10_000, Math.max(1, parsedLimit)) : 50;
     const skip = (page - 1) * limit;
 
     const filter = {};
     if (year) {
-      // Prefer normalized field for performance.
-      filter.yearLevel = year;
+      // Prefer normalized field but include legacy rows where yearLevel was not backfilled.
+      Object.assign(filter, getYearFilter(year));
     }
     if (section) {
       filter.section = section;
