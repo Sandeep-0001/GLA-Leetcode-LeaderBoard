@@ -79,7 +79,7 @@ export default function Leaderboard({ data, onRefreshStudent }) {
         if (!enableVirtual) return;
         setScrollTop(e.currentTarget.scrollTop);
       }}
-      className={`leaderboard-scroll rounded-lg border border-slate-700 bg-slate-800 ${enableVirtual ? 'max-h-[70vh] overflow-y-auto overflow-x-auto' : 'overflow-x-auto'}`}
+      className="leaderboard-scroll rounded-lg border border-slate-700 bg-slate-800 max-h-[70vh] overflow-y-auto overflow-x-auto"
     >
       <table className="min-w-full text-sm" role="table" aria-label="LeetCode leaderboard with student rankings and solved problems">
         <thead className="bg-slate-900/80 sticky top-0 z-10 backdrop-blur supports-backdrop-filter:bg-slate-900/60">
