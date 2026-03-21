@@ -132,11 +132,26 @@ export default function LeaderboardPage() {
   const handleRefreshStudent = async (id) => {
     if (!id) return;
     try {
-      await refreshStudentStats(id);
+      const res = await refreshStudentStats(id);
+      const updated = res?.student;
+      if (updated?._id) {
+        const updatedId = String(updated._id);
+        setData((prev) => prev.map((row) => {
+          if (String(row?._id) !== updatedId) return row;
+          return {
+            ...row,
+            easySolved: updated.easySolved,
+            mediumSolved: updated.mediumSolved,
+            hardSolved: updated.hardSolved,
+            totalSolved: updated.totalSolved,
+            contestRating: updated.contestRating,
+            lastUpdated: updated.lastUpdated,
+          };
+        }));
+      }
     } catch (_) {
       // ignore errors here; backend already keeps existing stats on failure
     }
-    await load({ nextPage: page });
   };
 
   const filteredData = data;

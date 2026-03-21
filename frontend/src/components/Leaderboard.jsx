@@ -124,10 +124,10 @@ export default function Leaderboard({ data, onRefreshStudent }) {
                   target="_blank"
                   rel="noreferrer"
                   className="text-cyan-300 hover:underline"
-                  title={`Open ${s.leetcodeUsername} on LeetCode (also refresh stats)`}
+                  title={`Open ${s.leetcodeUsername} on LeetCode and refresh only this student`}
                   onClick={() => {
                     if (onRefreshStudent && s._id) {
-                      // Fire and forget; do not block navigation
+                      // Refresh only the clicked student's stats without reloading the table.
                       onRefreshStudent(s._id);
                     }
                   }}
