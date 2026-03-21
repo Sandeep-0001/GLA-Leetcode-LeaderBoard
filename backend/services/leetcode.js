@@ -48,7 +48,9 @@ const fetchSolvedCounts = async (username) => {
     }
   `;
   const data = await graphql(query, { username });
-  const ac = data?.data?.matchedUser?.submitStats?.acSubmissionNum || [];
+  const matchedUser = data?.data?.matchedUser;
+  if (!matchedUser) return null;
+  const ac = matchedUser?.submitStats?.acSubmissionNum || [];
   const get = (d) => ac.find(x => x.difficulty === d)?.count || 0;
   return { easy: get('Easy'), medium: get('Medium'), hard: get('Hard') };
 };
@@ -72,6 +74,7 @@ const fetchLeetCodeStats = async (username) => {
       fetchSolvedCounts(normalized),
       fetchContestRating(normalized)
     ]);
+    if (!solved) return null;
     return {
       easySolved: solved.easy || 0,
       mediumSolved: solved.medium || 0,

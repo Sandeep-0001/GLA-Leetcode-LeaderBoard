@@ -269,9 +269,11 @@ exports.refreshStudent = async (req, res) => {
 
     const stats = await fetchLeetCodeStats(student.leetcodeUsername);
     if (!stats) {
-      return res.status(502).json({
-        message: 'Failed to refresh from LeetCode. Existing stats kept.',
-        student
+      return res.json({
+        message: 'LeetCode temporarily unavailable. Existing stats kept.',
+        updated: false,
+        stale: true,
+        student,
       });
     }
 
@@ -283,7 +285,7 @@ exports.refreshStudent = async (req, res) => {
     student.lastUpdated = new Date();
     await student.save();
     invalidateLeaderboardCache();
-    return res.json({ message: 'Updated', student });
+    return res.json({ message: 'Updated', updated: true, stale: false, student });
   } catch (err) {
     logger.error('Student refresh failed', err, { endpoint: '/refresh', studentId: req.params.id });
     return res.status(500).json({ message: 'Failed to refresh student.' });
