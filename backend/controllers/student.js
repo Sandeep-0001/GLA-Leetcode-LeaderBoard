@@ -16,23 +16,8 @@ function getYearFilter(year) {
     };
   }
 
-  if (year === '3') {
-    return {
-      $or: [
-        { yearLevel: '3' },
-        { batch: { $regex: /(\b3\b|3rd|third)/i } },
-      ],
-    };
-  }
-
-  if (year === '4') {
-    return {
-      $or: [
-        { yearLevel: '4' },
-        { batch: { $regex: /(\b4\b|4th|fourth)/i } },
-      ],
-    };
-  }
+  if (year === '3') return { yearLevel: '3' };
+  if (year === '4') return { yearLevel: '4' };
 
   return { yearLevel: year };
 }
