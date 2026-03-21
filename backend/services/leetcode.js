@@ -4,22 +4,30 @@ const logger = require('../utils/logger');
 function normalizeLeetCodeUsername(value) {
   if (!value) return '';
   const raw = String(value).trim();
+  const sanitize = (candidate) => String(candidate || '')
+    .trim()
+    .replace(/^@+/, '')
+    .replace(/[?#].*$/, '')
+    .replace(/\/+$/, '')
+    .replace(/[^A-Za-z0-9_-]/g, '');
+
   try {
     const url = new URL(raw);
     const parts = url.pathname.split('/').filter(Boolean);
     if (parts.length >= 2 && parts[0].toLowerCase() === 'u') {
-      return parts[1].trim();
+      return sanitize(parts[1]);
     }
     if (parts.length >= 1) {
-      return parts[0].trim();
+      return sanitize(parts[0]);
     }
     return '';
   } catch (_) {
-    return raw
+    const candidate = raw
       .replace(/^https?:\/\/([^/]*\.)?leetcode\.com\//i, '')
       .replace(/^u\//i, '')
       .replace(/\/.*/g, '')
       .trim();
+    return sanitize(candidate);
   }
 }
 
@@ -31,7 +39,7 @@ const graphql = async (query, variables) => {
       'User-Agent': 'Mozilla/5.0'
     },
     withCredentials: true,
-    timeout: 10000 // 10s timeout to avoid hanging
+    timeout: 15000 // allow extra time for occasional upstream slowness
   });
   return res.data;
 };

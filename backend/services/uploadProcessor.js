@@ -8,6 +8,13 @@ const logger = require('../utils/logger');
 function normalizeUsername(value) {
   if (!value) return '';
   const raw = String(value).trim();
+  const sanitize = (candidate) => String(candidate || '')
+    .trim()
+    .replace(/^@+/, '')
+    .replace(/[?#].*$/, '')
+    .replace(/\/+$/, '')
+    .replace(/[^A-Za-z0-9_-]/g, '');
+
   try {
     const url = new URL(raw);
     const parts = url.pathname.split('/').filter(Boolean);
@@ -17,14 +24,14 @@ function normalizeUsername(value) {
     } else if (parts.length >= 1) {
       user = parts[0];
     }
-    return user.trim();
+    return sanitize(user);
   } catch (_) {
     const stripped = raw
       .replace(/^https?:\/\/([^/]*\.)?leetcode\.com\//i, '')
       .replace(/^u\//i, '')
-      .replace(/\//g, '')
+      .replace(/\/.*/g, '')
       .trim();
-    return stripped;
+    return sanitize(stripped);
   }
 }
 
@@ -56,6 +63,9 @@ async function fetchStatsWithRetry(username, maxRetries = 2) {
     try {
       const stats = await fetchLeetCodeStats(username);
       if (stats) return stats;
+      if (attempt < maxRetries) {
+        await new Promise((r) => setTimeout(r, 500 * Math.pow(2, attempt)));
+      }
     } catch (err) {
       if (attempt === maxRetries) {
         logger.error('Failed to fetch student stats after retries', err, { username, attempts: maxRetries + 1 });
