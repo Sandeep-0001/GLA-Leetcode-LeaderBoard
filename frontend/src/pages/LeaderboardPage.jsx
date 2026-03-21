@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { getLeaderboard, getSections, refreshAll as refreshAllApi, refreshStudentStats } from '../services/api';
 import FileUpload from '../components/FileUpload.jsx';
 import Leaderboard from '../components/Leaderboard.jsx';
@@ -13,15 +14,21 @@ const updatePageMeta = (title, description) => {
 };
 
 export default function LeaderboardPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialYear = (searchParams.get('year') || '2').trim();
+  const initialSection = (searchParams.get('section') || '').trim();
+  const initialQuery = (searchParams.get('q') || '').trim();
+  const initialLimit = Number(searchParams.get('limit') || 50);
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [yearFilter, setYearFilter] = useState('2'); // '' | 2 | 3 | 4
-  const [sectionFilter, setSectionFilter] = useState(''); // A | B | C | ... or empty
+  const [yearFilter, setYearFilter] = useState(['', '2', '3', '4'].includes(initialYear) ? initialYear : '2'); // '' | 2 | 3 | 4
+  const [sectionFilter, setSectionFilter] = useState(initialSection); // A | B | C | ... or empty
   const [sectionOptions, setSectionOptions] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [refreshAllLoading, setRefreshAllLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(50);
+  const [limit, setLimit] = useState(Number.isFinite(initialLimit) && initialLimit > 0 ? initialLimit : 50);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -38,7 +45,7 @@ export default function LeaderboardPage() {
     updatePageMeta(title, description);
   }, [yearFilter, sectionFilter]);
 
-  const load = async ({ nextPage } = {}) => {
+  const load = useCallback(async ({ nextPage } = {}) => {
     setLoading(true);
     try {
       const isAll = Number(limit) >= 10_000;
@@ -51,12 +58,20 @@ export default function LeaderboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit, page, searchQuery, sectionFilter, yearFilter]);
+
+  useEffect(() => {
+    const params = {};
+    if (yearFilter) params.year = yearFilter;
+    if (sectionFilter) params.section = sectionFilter;
+    if (searchQuery.trim()) params.q = searchQuery.trim();
+    if (Number(limit) !== 50) params.limit = String(limit);
+    setSearchParams(params, { replace: true });
+  }, [yearFilter, sectionFilter, searchQuery, limit, setSearchParams]);
 
   useEffect(() => {
     setPage(1);
     load({ nextPage: 1 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [yearFilter, sectionFilter]);
 
   useEffect(() => {
@@ -78,13 +93,11 @@ export default function LeaderboardPage() {
     return () => {
       mounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [yearFilter]);
 
   useEffect(() => {
     setPage(1);
     load({ nextPage: 1 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit]);
 
   useEffect(() => {
@@ -93,8 +106,23 @@ export default function LeaderboardPage() {
       load({ nextPage: 1 });
     }, 300);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
+
+  useEffect(() => {
+    const onVisibilityOrFocus = () => {
+      if (document.visibilityState === 'visible') {
+        load({ nextPage: page });
+      }
+    };
+
+    window.addEventListener('focus', onVisibilityOrFocus);
+    document.addEventListener('visibilitychange', onVisibilityOrFocus);
+
+    return () => {
+      window.removeEventListener('focus', onVisibilityOrFocus);
+      document.removeEventListener('visibilitychange', onVisibilityOrFocus);
+    };
+  }, [load, page]);
 
   const handleUpload = async () => {
     await load({ nextPage: 1 });
