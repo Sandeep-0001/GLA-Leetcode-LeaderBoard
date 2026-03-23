@@ -13,14 +13,16 @@ const updatePageMeta = (title, description) => {
 };
 
 export default function LeaderboardPage() {
-  const initialYear = '2';
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialYearParam = urlParams.get('year') || '';
+  const initialYear = ['', '2', '3', '4'].includes(initialYearParam) ? initialYearParam : '';
   const initialSection = '';
   const initialQuery = '';
   const initialLimit = 50;
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [yearFilter, setYearFilter] = useState(['', '2', '3', '4'].includes(initialYear) ? initialYear : '2'); // '' | 2 | 3 | 4
+  const [yearFilter, setYearFilter] = useState(initialYear); // '' | 2 | 3 | 4
   const [sectionFilter, setSectionFilter] = useState(initialSection); // A | B | C | ... or empty
   const [sectionOptions, setSectionOptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
