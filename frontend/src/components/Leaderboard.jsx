@@ -88,8 +88,9 @@ export default function Leaderboard({ data, onRefreshStudent }) {
         if (!enableVirtual) return;
         setScrollTop(e.currentTarget.scrollTop);
       }}
+      className="overflow-x-auto -mx-4 sm:mx-0"
     >
-      <table className="min-w-full text-sm" role="table" aria-label="LeetCode leaderboard with student rankings and solved problems">
+      <table className="w-full min-w-[900px] text-sm" role="table" aria-label="LeetCode leaderboard with student rankings and solved problems">
         <thead className="bg-slate-900/80 sticky top-0 z-10 backdrop-blur supports-backdrop-filter:bg-slate-900/60">
           <tr className="border-b border-slate-700/80">
             <th className="px-4 py-3 text-left font-semibold" scope="col">Rank</th>
