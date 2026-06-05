@@ -2,10 +2,60 @@
 
 @layer base {
   html, body { height: 100%; }
-  body { @apply bg-slate-900 text-slate-100; }
+  body {
+    background-color: #07111f;
+    color: #e2e8f0;
+  }
 }
 
-.leaderboard-scroll {
-  scrollbar-gutter: stable both-edges;
-  overscroll-behavior: contain;
+@layer utilities {
+  .bg-grid-pattern {
+    background-image: radial-gradient(circle, rgba(59, 130, 246, 0.35) 1.5px, transparent 1.5px);
+    background-size: 60px 60px;
+  }
+
+  .delay-500 {
+    animation-delay: 500ms;
+  }
+
+  .delay-1000 {
+    animation-delay: 1000ms;
+  }
+
+  .delay-1500 {
+    animation-delay: 1500ms;
+  }
+
+  .glass-effect {
+    background: rgba(26, 31, 58, 0.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+
+  .hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+  }
+
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
 }

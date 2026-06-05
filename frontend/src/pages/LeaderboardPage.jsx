@@ -171,51 +171,74 @@ export default function LeaderboardPage() {
 
   return (
     <div className="min-h-[calc(100vh-3.5rem)]">
-      <header className="border-b border-slate-700/70 bg-linear-to-b from-slate-900 to-slate-800/40">
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-semibold tracking-wide">GLA LeetCode Leaderboard</h1>
-              <p className="text-sm md:text-base text-slate-300 mt-1">Track LeetCode progress, competitive rankings, and problem-solving performance across all GLA students.</p>
-            </div>
-            <div className="hidden md:flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs uppercase tracking-wide text-slate-400">Year</span>
-                <select
-                  id="yearFilter"
-                  value={yearFilter}
-                  onChange={(e) => setYearFilter(e.target.value)}
-                  className="bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
-                >
-                  <option value="">All Years</option>
-                  <option value="2">2nd Year</option>
-                  <option value="3">3rd Year</option>
-                  <option value="4">4th Year</option>
-                </select>
+      <header className="border-b border-slate-700/50 bg-slate-900/55 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto px-4 py-10">
+          <div className="text-center max-w-4xl mx-auto space-y-6">
+            <p className="text-xs sm:text-sm uppercase tracking-[0.35em] text-cyan-200/90">
+              CareerPrep AI | Leaderboard System
+            </p>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+              GLA LeetCode Leaderboard
+            </h1>
+            <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto">
+              Track LeetCode progress, competitive rankings, and problem-solving performance across all GLA students.
+            </p>
+          </div>
+
+          <div className="mt-8 glass-effect rounded-2xl p-4 sm:p-5">
+            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs uppercase tracking-wide text-slate-400">Year</span>
+                  <select
+                    id="yearFilter"
+                    value={yearFilter}
+                    onChange={(e) => setYearFilter(e.target.value)}
+                    className="bg-slate-800/80 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
+                  >
+                    <option value="">All Years</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs uppercase tracking-wide text-slate-400">Section</span>
+                  <select
+                    id="sectionFilter"
+                    value={sectionFilter}
+                    onChange={(e) => setSectionFilter(e.target.value)}
+                    className="w-40 bg-slate-800/80 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
+                    aria-label="Filter by section"
+                  >
+                    <option value="">All Sections</option>
+                    {sectionOptions.map((section) => (
+                      <option key={section} value={section}>{section}</option>
+                    ))}
+                  </select>
+                </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by name..."
+                  className="w-full xl:w-72 bg-slate-800/80 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 placeholder:text-slate-400"
+                  aria-label="Search by name"
+                />
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs uppercase tracking-wide text-slate-400">Section</span>
-                <select
-                  id="sectionFilter"
-                  value={sectionFilter}
-                  onChange={(e) => setSectionFilter(e.target.value)}
-                  className="w-40 bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
-                  aria-label="Filter by section"
-                >
-                  <option value="">All Sections</option>
-                  {sectionOptions.map((section) => (
-                    <option key={section} value={section}>{section}</option>
-                  ))}
-                </select>
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name..."
-                className="w-64 bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 placeholder:text-slate-400"
-                aria-label="Search by name"
-              />
+
+              <button
+                onClick={handleRefreshAll}
+                disabled={refreshAllLoading}
+                className={`px-4 py-2 rounded-lg border border-transparent inline-flex items-center justify-center gap-2 transition-all duration-200 ${
+                  refreshAllLoading
+                    ? 'bg-emerald-500/30 text-emerald-100 animate-pulse cursor-default'
+                    : 'bg-cyan-500 hover:bg-cyan-600 text-white hover:shadow-lg hover:shadow-cyan-500/25'
+                }`}
+                title="Refresh all students' LeetCode stats in background"
+              >
+                {refreshAllLoading ? 'Refreshing…' : 'Refresh All'}
+              </button>
             </div>
           </div>
         </div>
@@ -263,15 +286,15 @@ export default function LeaderboardPage() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+          <div className="rounded-xl glass-effect hover-lift p-4">
             <div className="text-sm text-slate-400">Students</div>
             <div className="text-2xl font-semibold mt-1 tabular-nums">{totals.students}</div>
           </div>
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+          <div className="rounded-xl glass-effect hover-lift p-4">
             <div className="text-sm text-slate-400">Total Solved</div>
             <div className="text-2xl font-semibold mt-1 tabular-nums">{totals.solved}</div>
           </div>
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+          <div className="rounded-xl glass-effect hover-lift p-4">
             <div className="text-sm text-slate-400">Avg Contest Rating</div>
             <div className="text-2xl font-semibold mt-1 tabular-nums">{totals.ratingAvg}</div>
           </div>
@@ -279,20 +302,6 @@ export default function LeaderboardPage() {
 
         <div className="grid md:grid-cols-[1fr_360px] gap-6">
           <div className="space-y-4">
-            <div className="flex justify-end">
-              <button
-                onClick={handleRefreshAll}
-                disabled={refreshAllLoading}
-                className={`px-3 py-1.5 rounded-md border border-transparent inline-flex items-center gap-2 ${
-                  refreshAllLoading
-                    ? 'bg-emerald-500/30 text-emerald-100 animate-pulse cursor-default'
-                    : 'bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30'
-                }`}
-                title="Refresh all students' LeetCode stats in background"
-              >
-                {refreshAllLoading ? 'Refreshing…' : 'Refresh All'}
-              </button>
-            </div>
             <div className="flex items-center justify-between gap-3">
               <div className="text-xs text-slate-400">
                 Page <span className="tabular-nums">{page}</span> / <span className="tabular-nums">{totalPages}</span> · Total <span className="tabular-nums">{total}</span>
@@ -313,27 +322,27 @@ export default function LeaderboardPage() {
                 <button
                   onClick={() => load({ nextPage: Math.max(1, page - 1) })}
                   disabled={loading || page <= 1 || Number(limit) >= 10_000}
-                  className="px-3 py-1.5 rounded-md bg-slate-800 border border-slate-700 text-slate-200 disabled:opacity-50"
+                  className="px-3 py-1.5 rounded-md bg-slate-800/70 border border-slate-700 text-slate-200 disabled:opacity-50"
                 >
                   Prev
                 </button>
                 <button
                   onClick={() => load({ nextPage: Math.min(totalPages, page + 1) })}
                   disabled={loading || page >= totalPages || Number(limit) >= 10_000}
-                  className="px-3 py-1.5 rounded-md bg-slate-800 border border-slate-700 text-slate-200 disabled:opacity-50"
+                  className="px-3 py-1.5 rounded-md bg-slate-800/70 border border-slate-700 text-slate-200 disabled:opacity-50"
                 >
                   Next
                 </button>
               </div>
             </div>
             {loading ? (
-              <div className="rounded-xl border border-slate-700 bg-slate-800 p-6 text-sm text-slate-300">Loading...</div>
+              <div className="rounded-xl glass-effect p-6 text-sm text-slate-300">Loading...</div>
             ) : (
               <Leaderboard data={filteredData} onRefreshStudent={handleRefreshStudent} />
             )}
           </div>
           <aside className="space-y-4">
-            <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+            <div className="rounded-xl glass-effect p-4">
               <FileUpload onUpload={handleUpload} yearFilter={yearFilter} />
             </div>
           </aside>
