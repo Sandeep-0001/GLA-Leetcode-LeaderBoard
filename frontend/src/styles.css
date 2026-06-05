@@ -1,11 +1,25 @@
 @import "tailwindcss";
 
+:root{
+  --bg: #07111f;
+  --grad-from: #0e5f73;
+  --grad-via: #08111f;
+  --grad-to: #07111f;
+  --blob-1: rgba(13,107,125,0.35);
+  --blob-2: rgba(11,29,61,0.8);
+  --blob-3: rgba(18,59,102,0.2);
+  --grid-dot: rgba(59,130,246,0.35);
+}
+
 @layer base {
   html, body { height: 100%; }
   body {
-    background-color: #07111f;
+    background-color: var(--bg);
     color: #e2e8f0;
   }
+
+  .app-bg { background-color: var(--bg); }
+  .app-grad { background-image: linear-gradient(to right, rgba(14,95,115,0.45), rgba(8,17,31,0.10), rgba(7,17,31,0.85)); }
 }
 
 @layer utilities {

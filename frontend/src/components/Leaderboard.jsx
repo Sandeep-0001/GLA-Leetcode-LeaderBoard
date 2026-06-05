@@ -65,6 +65,10 @@ export default function Leaderboard({ data, onRefreshStudent }) {
     return d.toLocaleDateString();
   };
 
+  // Mobile details expansion state
+  const [expandedRows, setExpandedRows] = useState({});
+  const toggleExpand = (id) => setExpandedRows((prev) => ({ ...prev, [id]: !prev[id] }));
+
   if (!data || data.length === 0) {
     return (
       <div className="rounded-lg border border-slate-700 bg-slate-800 p-8 text-center text-slate-300">
@@ -82,15 +86,68 @@ export default function Leaderboard({ data, onRefreshStudent }) {
   };
 
   return (
-    <div
-      ref={scrollRef}
-      onScroll={(e) => {
-        if (!enableVirtual) return;
-        setScrollTop(e.currentTarget.scrollTop);
-      }}
-      className="overflow-x-auto -mx-4 sm:mx-0"
-    >
-      <table className="w-full min-w-[900px] text-sm" role="table" aria-label="LeetCode leaderboard with student rankings and solved problems">
+    <div>
+      {/* Mobile: stacked cards */}
+      <div className="md:hidden space-y-3">
+        {visibleRows.map((s, i) => {
+          const id = s._id || s.rollNumber || s.roll || i;
+          const isExpanded = !!expandedRows[id];
+          return (
+            <article key={id} className="rounded-lg border border-slate-700 bg-slate-800 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="shrink-0">{rankBadge(Number(s.rank) || (i + 1))}</div>
+                  <div>
+                    <a
+                      href={`https://leetcode.com/${s.leetcodeUsername}/`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-cyan-300 hover:underline block font-semibold"
+                      title={`Open ${s.leetcodeUsername} on LeetCode and refresh only this student`}
+                      onClick={() => {
+                        if (onRefreshStudent && s._id) onRefreshStudent(s._id);
+                      }}
+                    >
+                      {s.name}
+                    </a>
+                    <div className="text-sm text-slate-400">{s.universityId ? String(s.universityId) : (s.rollNumber || s.roll || s.rollNo || '-')}</div>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <div className="text-lg font-mono tabular-nums text-cyan-500">{s.totalSolved}</div>
+                  <div className="text-sm text-slate-400">Rating: {s.contestRating?.toFixed ? s.contestRating.toFixed(2) : (s.contestRating ?? '-')}</div>
+                </div>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between text-sm text-slate-400">
+                <div>Section: {s.section || '-'}</div>
+                <button onClick={() => toggleExpand(id)} className="text-cyan-300">{isExpanded ? 'Hide' : 'Details'}</button>
+              </div>
+
+              {isExpanded && (
+                <div className="mt-3 text-sm grid grid-cols-3 gap-2">
+                  <div className="text-green-500">Easy: {s.easySolved ?? 0}</div>
+                  <div className="text-yellow-500">Medium: {s.mediumSolved ?? 0}</div>
+                  <div className="text-red-500">Hard: {s.hardSolved ?? 0}</div>
+                  <div className="col-span-3 text-slate-400">Last updated: {formatLastSubmit(s.lastUpdated)}</div>
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+
+      {/* Desktop/tablet: show full table */}
+      <div
+        ref={scrollRef}
+        onScroll={(e) => {
+          if (!enableVirtual) return;
+          setScrollTop(e.currentTarget.scrollTop);
+        }}
+        className="hidden md:block overflow-x-auto -mx-4 sm:mx-0"
+      >
+        <table className="w-full min-w-[900px] text-sm" role="table" aria-label="LeetCode leaderboard with student rankings and solved problems">
         <thead className="bg-slate-900/80 sticky top-0 z-10 backdrop-blur supports-backdrop-filter:bg-slate-900/60">
           <tr className="border-b border-slate-700/80">
             <th className="px-4 py-3 text-left font-semibold" scope="col">Rank</th>
@@ -152,6 +209,7 @@ export default function Leaderboard({ data, onRefreshStudent }) {
           ) : null}
         </tbody>
       </table>
+    </div>
     </div>
   );
 }
