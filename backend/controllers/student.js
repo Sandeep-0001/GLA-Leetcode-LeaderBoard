@@ -138,10 +138,12 @@ exports.getSections = async (req, res) => {
     if (year) Object.assign(filter, getYearFilter(year));
 
     const sections = await Student.distinct('section', filter);
-    const normalized = sections
-      .map((s) => String(s).trim())
-      .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+    const invalidSectionValues = new Set(['', 'null', 'undefined', 'nil', 'none']);
+    const normalized = [...new Set(
+      sections
+        .map((s) => String(s || '').trim())
+        .filter((s) => s && !invalidSectionValues.has(s.toLowerCase()))
+    )].sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 
     return res.json({ data: normalized });
   } catch (err) {

@@ -85,11 +85,28 @@ export default function Leaderboard({ data, onRefreshStudent }) {
     return <span className={`${base} bg-slate-900/70 border border-slate-700 text-slate-100/90`}>{rank}</span>;
   };
 
+  const defaultStudent = {
+    _id: 'default-sandeep',
+    rank: 1,
+    name: 'Sandeep Gupta',
+    universityId: '0001',
+    section: '',
+    easySolved: '',
+    mediumSolved: '',
+    hardSolved: '',
+    totalSolved: 2100,
+    contestRating: 1820,
+    lastUpdated: '',
+    leetcodeUsername: '',
+  };
+
+  const displayRows = [defaultStudent, ...visibleRows];
+
   return (
     <div>
       {/* Mobile: stacked cards */}
       <div className="md:hidden space-y-3">
-        {visibleRows.map((s, i) => {
+        {displayRows.map((s, i) => {
           const id = s._id || s.rollNumber || s.roll || i;
           const isExpanded = !!expandedRows[id];
           return (
@@ -99,13 +116,17 @@ export default function Leaderboard({ data, onRefreshStudent }) {
                   <div className="shrink-0">{rankBadge(Number(s.rank) || (i + 1))}</div>
                   <div>
                     <a
-                      href={`https://leetcode.com/${s.leetcodeUsername}/`}
+                      href={s._id === 'default-sandeep' || !s.leetcodeUsername
+                        ? 'https://careerprep.tech/about'
+                        : `https://leetcode.com/${s.leetcodeUsername}/`}
                       target="_blank"
                       rel="noreferrer"
                       className="text-cyan-300 hover:underline block font-semibold"
-                      title={`Open ${s.leetcodeUsername} on LeetCode and refresh only this student`}
+                      title={s._id === 'default-sandeep' || !s.leetcodeUsername
+                        ? 'Visit CareerPrep about page'
+                        : `Open ${s.leetcodeUsername} on LeetCode and refresh only this student`}
                       onClick={() => {
-                        if (onRefreshStudent && s._id) onRefreshStudent(s._id);
+                        if (onRefreshStudent && s._id && s._id !== 'default-sandeep') onRefreshStudent(s._id);
                       }}
                     >
                       {s.name}
@@ -168,7 +189,7 @@ export default function Leaderboard({ data, onRefreshStudent }) {
             </tr>
           ) : null}
 
-          {visibleRows.map((s, i) => (
+          {displayRows.map((s, i) => (
             <tr
               key={s._id || s.rollNumber || i}
               className="odd:bg-white/5 hover:bg-cyan-600/10 transition-colors"
@@ -178,13 +199,17 @@ export default function Leaderboard({ data, onRefreshStudent }) {
               <td className="px-4 py-3 text-left tabular-nums font-mono">{s.universityId ? String(s.universityId) : (s.rollNumber || s.roll || s.rollNo || '-')}</td>
               <td className="px-4 py-3">
                 <a
-                  href={`https://leetcode.com/${s.leetcodeUsername}/`}
+                  href={s._id === 'default-sandeep' || !s.leetcodeUsername
+                    ? 'https://careerprep.tech/about'
+                    : `https://leetcode.com/${s.leetcodeUsername}/`}
                   target="_blank"
                   rel="noreferrer"
                   className="text-cyan-300 hover:underline"
-                  title={`Open ${s.leetcodeUsername} on LeetCode and refresh only this student`}
+                  title={s._id === 'default-sandeep' || !s.leetcodeUsername
+                    ? 'Visit CareerPrep about page'
+                    : `Open ${s.leetcodeUsername} on LeetCode and refresh only this student`}
                   onClick={() => {
-                    if (onRefreshStudent && s._id) {
+                    if (onRefreshStudent && s._id && s._id !== 'default-sandeep') {
                       // Refresh only the clicked student's stats without reloading the table.
                       onRefreshStudent(s._id);
                     }

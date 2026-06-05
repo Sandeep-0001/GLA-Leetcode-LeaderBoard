@@ -70,7 +70,13 @@ export default function LeaderboardPage() {
     const loadSections = async () => {
       try {
         const res = await getSections(yearFilter);
-        const options = Array.isArray(res?.data) ? res.data : [];
+        const options = Array.isArray(res?.data)
+          ? Array.from(new Set(
+              res.data
+                .map((opt) => String(opt ?? '').trim())
+                .filter((opt) => opt && !['null', 'undefined', 'nil', 'none'].includes(opt.toLowerCase()))
+            ))
+          : [];
         if (!mounted) return;
         setSectionOptions(options);
         if (sectionFilter && !options.includes(sectionFilter)) {
