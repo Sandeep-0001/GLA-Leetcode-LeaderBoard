@@ -89,7 +89,7 @@ export default function Leaderboard({ data, onRefreshStudent }) {
     _id: 'default-sandeep',
     rank: 1,
     name: 'Sandeep Gupta',
-    universityId: '0001',
+    universityId: '2315001958',
     section: '',
     easySolved: '',
     mediumSolved: '',
