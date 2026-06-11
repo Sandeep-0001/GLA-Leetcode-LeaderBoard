@@ -192,7 +192,7 @@ export default function LeaderboardPage() {
           </div>
 
           <div className="mt-8 glass-effect rounded-2xl p-4 sm:p-5">
-            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+            <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-2">
                   <span className="text-xs uppercase tracking-wide text-slate-400">Year</span>
@@ -228,23 +228,25 @@ export default function LeaderboardPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name..."
-                  className="w-full xl:w-72 bg-slate-800/80 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 placeholder:text-slate-400"
+                  className="w-full sm:w-72 bg-slate-800/80 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 placeholder:text-slate-400"
                   aria-label="Search by name"
                 />
               </div>
 
-              <button
-                onClick={handleRefreshAll}
-                disabled={refreshAllLoading}
-                className={`px-4 py-2 rounded-lg border border-transparent inline-flex items-center justify-center gap-2 transition-all duration-200 ${
-                  refreshAllLoading
-                    ? 'bg-emerald-500/30 text-emerald-100 animate-pulse cursor-default'
-                    : 'bg-cyan-500 hover:bg-cyan-600 text-white hover:shadow-lg hover:shadow-cyan-500/25'
-                }`}
-                title="Refresh all students' LeetCode stats in background"
-              >
-                {refreshAllLoading ? 'Refreshing…' : 'Refresh All'}
-              </button>
+              <div>
+                <button
+                  onClick={handleRefreshAll}
+                  disabled={refreshAllLoading}
+                  className={`px-4 py-2 rounded-lg border border-transparent inline-flex items-center justify-center gap-2 transition-all duration-200 ${
+                    refreshAllLoading
+                      ? 'bg-emerald-500/30 text-emerald-100 animate-pulse cursor-default'
+                      : 'bg-cyan-500 hover:bg-cyan-600 text-white hover:shadow-lg hover:shadow-cyan-500/25'
+                  }`}
+                  title="Refresh all students' LeetCode stats in background"
+                >
+                  {refreshAllLoading ? 'Refreshing…' : 'Refresh All'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -252,34 +254,36 @@ export default function LeaderboardPage() {
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         <div className="md:hidden space-y-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xs uppercase tracking-wide text-slate-400">Year</span>
-            <select
-              id="yearFilter"
-              value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
-              className="bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 w-full"
-            >
-              <option value="">All Years</option>
-              <option value="2">2nd Year</option>
-              <option value="3">3rd Year</option>
-              <option value="4">4th Year</option>
-            </select>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs uppercase tracking-wide text-slate-400">Section</span>
-            <select
-              id="sectionFilter"
-              value={sectionFilter}
-              onChange={(e) => setSectionFilter(e.target.value)}
-              className="w-full bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
-              aria-label="Filter by section"
-            >
-              <option value="">All Sections</option>
-              {sectionOptions.map((section) => (
-                <option key={section} value={section}>{section}</option>
-              ))}
-            </select>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs uppercase tracking-wide text-slate-400">Year</span>
+              <select
+                id="yearFilter"
+                value={yearFilter}
+                onChange={(e) => setYearFilter(e.target.value)}
+                className="bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 w-full"
+              >
+                <option value="">All Years</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs uppercase tracking-wide text-slate-400">Section</span>
+              <select
+                id="sectionFilter"
+                value={sectionFilter}
+                onChange={(e) => setSectionFilter(e.target.value)}
+                className="w-full bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
+                aria-label="Filter by section"
+              >
+                <option value="">All Sections</option>
+                {sectionOptions.map((section) => (
+                  <option key={section} value={section}>{section}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <input
             type="text"
@@ -289,6 +293,18 @@ export default function LeaderboardPage() {
             className="w-full bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 placeholder:text-slate-400"
             aria-label="Search by name"
           />
+          <button
+            onClick={handleRefreshAll}
+            disabled={refreshAllLoading}
+            className={`w-full px-4 py-2 rounded-lg border border-transparent inline-flex items-center justify-center gap-2 transition-all duration-200 ${
+              refreshAllLoading
+                ? 'bg-emerald-500/30 text-emerald-100 animate-pulse cursor-default'
+                : 'bg-cyan-500 hover:bg-cyan-600 text-white hover:shadow-lg hover:shadow-cyan-500/25'
+            }`}
+            title="Refresh all students' LeetCode stats in background"
+          >
+            {refreshAllLoading ? 'Refreshing…' : 'Refresh All'}
+          </button>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
