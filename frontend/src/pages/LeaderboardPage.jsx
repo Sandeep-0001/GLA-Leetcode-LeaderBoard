@@ -191,77 +191,60 @@ export default function LeaderboardPage() {
             </p>
           </div>
 
-          <div className="mt-8 glass-effect rounded-2xl p-4 sm:p-5">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs uppercase tracking-wide text-slate-400">Year</span>
-                  <select
-                    id="yearFilter"
-                    value={yearFilter}
-                    onChange={(e) => setYearFilter(e.target.value)}
-                    className="bg-slate-800/80 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
-                  >
-                    <option value="">All Years</option>
-                    <option value="2">2nd Year</option>
-                    <option value="3">3rd Year</option>
-                    <option value="4">4th Year</option>
-                  </select>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs uppercase tracking-wide text-slate-400">Section</span>
-                  <select
-                    id="sectionFilter"
-                    value={sectionFilter}
-                    onChange={(e) => setSectionFilter(e.target.value)}
-                    className="w-40 bg-slate-800/80 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
-                    aria-label="Filter by section"
-                  >
-                    <option value="">All Sections</option>
-                    {sectionOptions.map((section) => (
-                      <option key={section} value={section}>{section}</option>
-                    ))}
-                  </select>
-                </div>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by name..."
-                  className="w-full sm:w-72 bg-slate-800/80 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 placeholder:text-slate-400"
-                  aria-label="Search by name"
-                />
-              </div>
-
-              <div>
-                <button
-                  onClick={handleRefreshAll}
-                  disabled={refreshAllLoading}
-                  className={`px-4 py-2 rounded-lg border border-transparent inline-flex items-center justify-center gap-2 transition-all duration-200 ${
-                    refreshAllLoading
-                      ? 'bg-emerald-500/30 text-emerald-100 animate-pulse cursor-default'
-                      : 'bg-cyan-500 hover:bg-cyan-600 text-white hover:shadow-lg hover:shadow-cyan-500/25'
-                  }`}
-                  title="Refresh all students' LeetCode stats in background"
+          <div className="hidden md:block mt-8 glass-effect rounded-2xl p-4 sm:p-5">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xs uppercase tracking-wide text-slate-400">Year</span>
+                <select
+                  id="yearFilter"
+                  value={yearFilter}
+                  onChange={(e) => setYearFilter(e.target.value)}
+                  className="bg-slate-800/80 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
                 >
-                  {refreshAllLoading ? 'Refreshing…' : 'Refresh All'}
-                </button>
+                  <option value="">All Years</option>
+                  <option value="2">2nd Year</option>
+                  <option value="3">3rd Year</option>
+                  <option value="4">4th Year</option>
+                </select>
               </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs uppercase tracking-wide text-slate-400">Section</span>
+                <select
+                  id="sectionFilter"
+                  value={sectionFilter}
+                  onChange={(e) => setSectionFilter(e.target.value)}
+                  className="w-40 bg-slate-800/80 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
+                  aria-label="Filter by section"
+                >
+                  <option value="">All Sections</option>
+                  {sectionOptions.map((section) => (
+                    <option key={section} value={section}>{section}</option>
+                  ))}
+                </select>
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by name..."
+                className="w-full sm:w-72 bg-slate-800/80 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 placeholder:text-slate-400"
+                aria-label="Search by name"
+              />
             </div>
           </div>
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-        <div className="md:hidden space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xs uppercase tracking-wide text-slate-400">Year</span>
+        <div className="md:hidden bg-slate-800/50 rounded-lg p-3 space-y-2.5">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs uppercase tracking-wide text-slate-400 font-medium">Year</label>
               <select
                 id="yearFilter"
                 value={yearFilter}
                 onChange={(e) => setYearFilter(e.target.value)}
-                className="bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 w-full"
+                className="bg-slate-800 text-slate-100 border border-slate-700 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
               >
                 <option value="">All Years</option>
                 <option value="2">2nd Year</option>
@@ -269,13 +252,13 @@ export default function LeaderboardPage() {
                 <option value="4">4th Year</option>
               </select>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs uppercase tracking-wide text-slate-400">Section</span>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs uppercase tracking-wide text-slate-400 font-medium">Section</label>
               <select
                 id="sectionFilter"
                 value={sectionFilter}
                 onChange={(e) => setSectionFilter(e.target.value)}
-                className="w-full bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
+                className="bg-slate-800 text-slate-100 border border-slate-700 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
                 aria-label="Filter by section"
               >
                 <option value="">All Sections</option>
@@ -290,21 +273,9 @@ export default function LeaderboardPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by name..."
-            className="w-full bg-slate-800 text-slate-100 border border-slate-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 placeholder:text-slate-400"
+            className="w-full bg-slate-800 text-slate-100 border border-slate-700 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/40 placeholder:text-slate-400"
             aria-label="Search by name"
           />
-          <button
-            onClick={handleRefreshAll}
-            disabled={refreshAllLoading}
-            className={`w-full px-4 py-2 rounded-lg border border-transparent inline-flex items-center justify-center gap-2 transition-all duration-200 ${
-              refreshAllLoading
-                ? 'bg-emerald-500/30 text-emerald-100 animate-pulse cursor-default'
-                : 'bg-cyan-500 hover:bg-cyan-600 text-white hover:shadow-lg hover:shadow-cyan-500/25'
-            }`}
-            title="Refresh all students' LeetCode stats in background"
-          >
-            {refreshAllLoading ? 'Refreshing…' : 'Refresh All'}
-          </button>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
@@ -354,6 +325,23 @@ export default function LeaderboardPage() {
                   className="px-3 py-1.5 rounded-md bg-slate-800/70 border border-slate-700 text-slate-200 disabled:opacity-50"
                 >
                   Next
+                </button>
+                <button
+                  onClick={handleRefreshAll}
+                  disabled={refreshAllLoading}
+                  className={`px-3 py-1.5 rounded-md border border-transparent inline-flex items-center justify-center gap-1.5 text-sm font-medium transition-all duration-200 ${
+                    refreshAllLoading
+                      ? 'bg-emerald-500/30 text-emerald-100 animate-pulse cursor-default'
+                      : 'bg-cyan-500 hover:bg-cyan-600 text-white hover:shadow-md hover:shadow-cyan-500/20'
+                  }`}
+                  title="Refresh all students' LeetCode stats in background"
+                  aria-label="Refresh all students' stats"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span className="hidden sm:inline">{refreshAllLoading ? 'Refreshing…' : 'Refresh'}</span>
+                  <span className="sm:hidden">{refreshAllLoading ? '…' : ''}</span>
                 </button>
               </div>
             </div>
